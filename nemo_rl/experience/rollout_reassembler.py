@@ -204,6 +204,10 @@ class FinalizedGroup:
     # group (the caller does not read these when dropped is True).
     valid_row_count: int = 0
     total_row_count: int = 0
+    # True when the valid rows' rewards carry no advantage signal (at most one
+    # row, or all exactly equal). Same predicate as dynamic sampling's
+    # RolloutManager._is_zero_variance_group; the caller decides whether to act on it.
+    zero_variance: bool = False
 
 
 def _capture_token_metrics(
@@ -1379,6 +1383,8 @@ class RolloutReassembler:
             reward_observations=reward_observations,
             valid_row_count=len(valid_rows),
             total_row_count=real_row_count,
+            zero_variance=bool(valid_rows)
+            and len({row.reward for row in valid_rows}) == 1,
         )
 
     # ── internals ───────────────────────────────────────────────────────────
