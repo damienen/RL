@@ -1299,6 +1299,9 @@ def test_min_valid_fraction_counts_rollouts_independently_of_segments(
         ctrl._rollout_manager = SimpleNamespace(
             generate_for_finalization=AsyncMock(return_value=request),
             record_finalizer_dropped_prompt=MagicMock(),
+            # The capture path tallies every finalized group's rewards before deciding
+            # whether to keep it, so the fake needs this whatever the threshold does.
+            record_group_rewards=MagicMock(),
             stats=SimpleNamespace(committed=0),
         )
         _init_pump_ledgers(ctrl)
